@@ -1,53 +1,54 @@
 import React, { useState } from 'react';
+import { MdDownload, MdInfoOutline } from 'react-icons/md';
 import './ExportacaoDados.css';
 
-// Componente para Exportação de Dados (RF09)
-// Permite exportar dados em Excel (XLSX) ou CSV
-
 export default function ExportacaoDados() {
-  // Estado para controlar a opção de exportação
   const [selectedFormat, setSelectedFormat] = useState('excel');
+  const [selectedGrao, setSelectedGrao] = useState('SOJA');
+  const [selectedPeriodo, setSelectedPeriodo] = useState('ultimas-2-semanas');
 
-  // Manipula a mudança de formato
+  const graos = [
+    { value: 'SOJA', label: 'Soja' },
+    { value: 'FEIJAO', label: 'Feijão' },
+    { value: 'MILHO', label: 'Milho' },
+    { value: 'ARROZ', label: 'Arroz' }
+  ];
+
+  const periodos = [
+    { value: 'ultimas-2-semanas', label: 'Últimas 2 Semanas' },
+    { value: 'ultimo-mes', label: 'Último Mês' },
+    { value: 'ultimos-3-meses', label: 'Últimos 3 Meses' },
+    { value: 'todo-periodo', label: 'Todo Período' }
+  ];
+
   const handleFormatChange = (format) => {
     setSelectedFormat(format);
   };
 
-  // Função para exportar em Excel (XLSX)
   const handleExportarExcel = () => {
-    // Dados de exemplo (você integraria com dados reais)
     const dados = [
       {
         Data: '19/04/2024',
         Hora: '16:00',
+        Grao: selectedGrao,
         pH: '6,2',
-        Temperatura: '25,2°C',
-        Umidade: '64%',
-        Grupo: 'Umidade Alta'
+        Temperatura: '25,2',
+        Umidade: '64',
+        CO2: '1,1',
+        COVs: '85'
       },
       {
         Data: '18/04/2024',
         Hora: '16:00',
+        Grao: selectedGrao,
         pH: '6,1',
-        Temperatura: '25,0°C',
-        Umidade: '62%',
-        Grupo: 'Controle'
-      },
-      {
-        Data: '17/04/2024',
-        Hora: '16:00',
-        pH: '6,4',
-        Temperatura: '28,5°C',
-        Umidade: '58%',
-        Grupo: 'Temperatura Alta'
+        Temperatura: '25,0',
+        Umidade: '62',
+        CO2: '1,0',
+        COVs: '82'
       }
     ];
 
-    // Simula a criação de um arquivo XLSX
-    // Para usar em produção, instale: npm install xlsx
-    console.log('Exportando para Excel...', dados);
-    
-    // Cria um CSV e simula download de Excel
     let csvContent = "data:text/csv;charset=utf-8,";
     const headers = Object.keys(dados[0]);
     
@@ -59,45 +60,38 @@ export default function ExportacaoDados() {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "dados_graos.csv");
+    link.setAttribute("download", `dados_${selectedGrao}_${selectedPeriodo}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
 
-    alert('Arquivo Excel exportado com sucesso!');
+    alert('Arquivo exportado com sucesso!');
   };
 
-  // Função para exportar em CSV
   const handleExportarCSV = () => {
-    // Dados de exemplo
     const dados = [
       {
         Data: '19/04/2024',
         Hora: '16:00',
+        Grao: selectedGrao,
         pH: '6,2',
-        Temperatura: '25,2°C',
-        Umidade: '64%',
-        Grupo: 'Umidade Alta'
+        Temperatura: '25,2',
+        Umidade: '64',
+        CO2: '1,1',
+        COVs: '85'
       },
       {
         Data: '18/04/2024',
         Hora: '16:00',
+        Grao: selectedGrao,
         pH: '6,1',
-        Temperatura: '25,0°C',
-        Umidade: '62%',
-        Grupo: 'Controle'
-      },
-      {
-        Data: '17/04/2024',
-        Hora: '16:00',
-        pH: '6,4',
-        Temperatura: '28,5°C',
-        Umidade: '58%',
-        Grupo: 'Temperatura Alta'
+        Temperatura: '25,0',
+        Umidade: '62',
+        CO2: '1,0',
+        COVs: '82'
       }
     ];
 
-    // Cria conteúdo CSV
     let csvContent = "data:text/csv;charset=utf-8,";
     const headers = Object.keys(dados[0]);
     
@@ -109,29 +103,59 @@ export default function ExportacaoDados() {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "dados_graos.csv");
+    link.setAttribute("download", `dados_${selectedGrao}_${selectedPeriodo}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
 
-    alert('Arquivo CSV exportado com sucesso!');
+    alert('Arquivo exportado com sucesso!');
   };
 
   return (
     <div className="exportacao-dados-container">
       <div className="card">
         <div className="card-header">
-          <span className="icon-export">📊</span>
+          <MdDownload className="icon-export" />
           <h2>Exportação de Dados</h2>
-          <button className="info-btn" title="Informações">ℹ</button>
+          <button className="info-btn" title="Informações">
+            <MdInfoOutline />
+          </button>
         </div>
 
-        {/* Seção de Seleção de Formato */}
         <div className="export-section">
-          <label className="export-label">Exportar para:</label>
+          <label className="export-label">Grão</label>
+          <select
+            value={selectedGrao}
+            onChange={(e) => setSelectedGrao(e.target.value)}
+            className="filter-select"
+          >
+            {graos.map(grao => (
+              <option key={grao.value} value={grao.value}>
+                {grao.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="export-section">
+          <label className="export-label">Período</label>
+          <select
+            value={selectedPeriodo}
+            onChange={(e) => setSelectedPeriodo(e.target.value)}
+            className="filter-select"
+          >
+            {periodos.map(periodo => (
+              <option key={periodo.value} value={periodo.value}>
+                {periodo.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="export-section">
+          <label className="export-label">Formato:</label>
           
           <div className="radio-group">
-            {/* Opção Excel */}
             <div className="radio-option">
               <input
                 type="radio"
@@ -148,7 +172,6 @@ export default function ExportacaoDados() {
               </label>
             </div>
 
-            {/* Opção CSV */}
             <div className="radio-option">
               <input
                 type="radio"
@@ -167,15 +190,13 @@ export default function ExportacaoDados() {
           </div>
         </div>
 
-        {/* Informação sobre os dados */}
         <div className="export-info">
           <p className="info-text">
-            Você está prestes a exportar os dados de todas as medições realizadas.
-            O arquivo incluirá pH, temperatura, umidade e observações.
+            Você está exportando dados de {selectedGrao} no período {selectedPeriodo}. 
+            O arquivo incluirá pH, temperatura, umidade, gases e observações.
           </p>
         </div>
 
-        {/* Botão Exportar */}
         <button
           onClick={selectedFormat === 'excel' ? handleExportarExcel : handleExportarCSV}
           className="btn-exportar"

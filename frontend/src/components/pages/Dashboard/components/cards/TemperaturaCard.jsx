@@ -1,5 +1,6 @@
 import React from 'react';
 import './TemperaturaCard.css';
+import { MdThermostat } from 'react-icons/md';
 
 export default function TemperaturaCard({ data, loading }) {
   if (loading) {

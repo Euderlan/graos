@@ -1,18 +1,15 @@
 import React, { useState } from 'react';
+import { MdWater, MdInfoOutline } from 'react-icons/md';
 import './RegistroManual.css';
 
-// Componente para o Registro Manual de dados (RF07)
-// Responsável pelo registro de pH, testes químicos e observações
-
-export default function RegistroManual() {
-  // Estado para armazenar dados do formulário
+export default function RegistroManual({ onRegistroSalvo }) {
   const [formData, setFormData] = useState({
     ph: '',
     testeQuimico: 'Teste de Acidez',
-    observacoes: ''
+    observacoes: '',
+    grupo: 'Controle'
   });
 
-  // Manipula mudanças nos campos de entrada
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -21,30 +18,36 @@ export default function RegistroManual() {
     }));
   };
 
-  // Manipula o envio do formulário
   const handleSalvar = (e) => {
     e.preventDefault();
     
-    // Validação básica
     if (!formData.ph.trim()) {
       alert('Por favor, preencha o campo de pH');
       return;
     }
 
-    // Aqui você integra com sua API/banco de dados
-    console.log('Dados salvos:', {
-      ...formData,
-      timestamp: new Date().toISOString()
-    });
+    const agora = new Date();
+    const data = agora.toLocaleDateString('pt-BR');
+    const hora = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
-    // Feedback ao usuário
+    const novoRegistro = {
+      ...formData,
+      data,
+      hora,
+      timestamp: new Date().toISOString()
+    };
+
+    if (onRegistroSalvo) {
+      onRegistroSalvo(novoRegistro);
+    }
+
     alert('Registro salvo com sucesso!');
     
-    // Limpa o formulário
     setFormData({
       ph: '',
       testeQuimico: 'Teste de Acidez',
-      observacoes: ''
+      observacoes: '',
+      grupo: 'Controle'
     });
   };
 
@@ -52,13 +55,14 @@ export default function RegistroManual() {
     <div className="registro-manual-container">
       <div className="card">
         <div className="card-header">
-          <span className="icon-drop">💧</span>
+          <MdWater className="icon-drop" />
           <h2>Registro Manual</h2>
-          <button className="info-btn" title="Informações">ℹ</button>
+          <button className="info-btn" title="Informações">
+            <MdInfoOutline />
+          </button>
         </div>
 
         <form onSubmit={handleSalvar} className="form">
-          {/* Campo de pH */}
           <div className="form-group">
             <label htmlFor="ph">pH</label>
             <input
@@ -75,7 +79,22 @@ export default function RegistroManual() {
             />
           </div>
 
-          {/* Campo Teste Químico */}
+          <div className="form-group">
+            <label htmlFor="grupo">Grupo Experimental</label>
+            <select
+              id="grupo"
+              name="grupo"
+              value={formData.grupo}
+              onChange={handleInputChange}
+              className="select-field"
+            >
+              <option value="Controle">Controle</option>
+              <option value="Umidade Alta">Umidade Alta</option>
+              <option value="Temperatura Alta">Temperatura Alta</option>
+              <option value="Extremo">Extremo</option>
+            </select>
+          </div>
+
           <div className="form-group">
             <label htmlFor="testeQuimico">Teste Químico</label>
             <select
@@ -92,7 +111,6 @@ export default function RegistroManual() {
             </select>
           </div>
 
-          {/* Campo Observações */}
           <div className="form-group">
             <label htmlFor="observacoes">Observações</label>
             <textarea
@@ -106,7 +124,6 @@ export default function RegistroManual() {
             ></textarea>
           </div>
 
-          {/* Botão Salvar */}
           <button type="submit" className="btn-salvar">
             Salvar
           </button>
