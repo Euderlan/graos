@@ -4,6 +4,7 @@ frontend/dist
 
 # Backend (futuro)
 backend/__pycache__
+backend/node_modules
 backend/.env
 backend/venv
 
